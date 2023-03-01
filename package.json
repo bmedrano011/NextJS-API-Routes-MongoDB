@@ -16,6 +16,8 @@
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
+    "dotenv": "^16.0.3",
+    "mongoose": "^7.0.0",
     "next": "latest",
     "prop-types": "latest",
     "react": "latest",
