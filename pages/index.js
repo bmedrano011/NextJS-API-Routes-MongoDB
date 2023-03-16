@@ -1,6 +1,9 @@
-import * as React from "react";
-import Copyright from "../src/Copyright";
+import React, { useState } from "react";
+import Copyright from "../src/components/Copyright";
 import {
+  Button,
+  Dialog,
+  DialogTitle,
   Grid,
   Paper,
   Table,
@@ -11,10 +14,30 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import DoneIcon from "@mui/icons-material/Done";
 import useData from "../src/useData";
+import TodoForm from "../src/components/TodoForm";
 
 export default function Index() {
-  const { isLoading, returnData } = useData("todos");
+  const { isLoading, returnData, getData, createData, deleteData } =
+    useData("todos");
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    getData("todos");
+  };
+
+  const handleCreate = async (formData) => {
+    await createData("todos", formData);
+    handleDialogClose();
+  };
+
+  const handleDelete = async (id) => {
+    await deleteData("todos", id);
+  };
 
   if (isLoading) {
     return (
@@ -31,7 +54,17 @@ export default function Index() {
             Todos example
           </Typography>
         </Grid>
+
         <Grid container m={5} justifyContent="center">
+          <Grid item xs={8} container justifyContent="flex-end">
+            <Button
+              variant="contained"
+              sx={{ margin: 3 }}
+              onClick={() => setOpenDialog(true)}
+            >
+              Add Todo
+            </Button>
+          </Grid>
           <Grid item xs={8}>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -52,7 +85,30 @@ export default function Index() {
                       <TableCell>{row._id}</TableCell>
                       <TableCell>{row.title}</TableCell>
                       <TableCell>{row.description}</TableCell>
-                      <TableCell> {row.completed ? "True" : "False"}</TableCell>
+                      <TableCell>{row.completed ? "True" : "False"}</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell>
+                        <Grid container spacing={3}>
+                          <Grid item>
+                            <DoneIcon
+                              // onClick={() => handleDelete(row._id)}
+                              sx={{
+                                color: "lightgreen",
+                                ":hover": { color: "green" },
+                              }}
+                            />
+                          </Grid>
+                          <Grid item>
+                            <DeleteOutlinedIcon
+                              onClick={() => handleDelete(row._id)}
+                              sx={{
+                                color: "pink",
+                                ":hover": { color: "red" },
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -61,6 +117,51 @@ export default function Index() {
           </Grid>
         </Grid>
       </Grid>
+      <Dialog
+        onClose={handleDialogClose}
+        open={openDialog}
+        sx={{ padding: 1 }}
+        maxWidth="md"
+        fullWidth={true}
+      >
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Grid item xs={10}>
+            <DialogTitle
+              sx={{
+                fontWeight: 700,
+              }}
+            >
+              Create Todo
+            </DialogTitle>
+          </Grid>
+          <Grid
+            item
+            xs={2}
+            container
+            justifyContent="flex-end"
+            onClick={() => handleDialogClose()}
+            sx={{
+              padding: 1,
+
+              fontWeight: 500,
+              ":hover": {
+                color: "primaryGray.main",
+
+                cursor: "pointer",
+              },
+              textTransform: "none",
+            }}
+          >
+            <CloseIcon />
+          </Grid>
+        </Grid>
+        <TodoForm handleCreate={handleCreate} />
+      </Dialog>
       <Grid container m={5} justifyContent="center">
         <Copyright />
       </Grid>

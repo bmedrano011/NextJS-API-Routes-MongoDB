@@ -16,10 +16,10 @@ export default function useData(url) {
     fetchData();
   }, [url]);
 
-  const getData = async () => {
+  const getData = async (url) => {
     setIsLoading(true);
     const response = await http
-      .get(url)
+      .get(`${url}/${0}`)
       .then((response) => {
         setReturnData(response.data);
       })
@@ -29,10 +29,43 @@ export default function useData(url) {
       .finally(() => setIsLoading(false));
   };
 
+  const createData = async (url, post) => {
+    if (!url) return;
+    setIsLoading(true);
+    const response = await http
+      .post(`${url}/${0}`, post)
+      .then((response) => {
+        setReturnData(response.data);
+      })
+      .catch((error) => {
+        setServerError(error);
+      })
+      .finally(() => setIsLoading(false));
+
+    await getData("todos");
+  };
+
+  const deleteData = async (url, id) => {
+    if (!url) return;
+    setIsLoading(true);
+    const response = await http
+      .delete(`${url}/${id}`)
+      .then((response) => {
+        returnData(response.data);
+      })
+      .catch((error) => {
+        setServerError(error);
+      })
+      .finally(() => setIsLoading(false));
+    await getData("todos");
+  };
+
   return {
     isLoading,
     returnData,
     error,
     getData,
+    createData,
+    deleteData,
   };
 }
