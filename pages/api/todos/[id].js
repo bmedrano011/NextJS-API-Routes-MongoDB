@@ -32,7 +32,7 @@ export default async function handler(request, response) {
         response.status(201).json(todo);
       } catch (e) {
         console.error(e);
-        response.status(400).json({ success: false });
+        response.status(400).json({ success: false, message: e.message });
       }
       break;
     case "DELETE":
@@ -44,7 +44,7 @@ export default async function handler(request, response) {
         response.status(200).json({ message: "Todo deleted successfully" });
       } catch (e) {
         console.error(e);
-        response.status(500).json({ message: e.message });
+        response.status(500).json({ success: false, message: e.message });
       }
       break;
     default:
