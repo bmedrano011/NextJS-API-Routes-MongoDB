@@ -35,6 +35,25 @@ export default async function handler(request, response) {
         response.status(400).json({ success: false, message: e.message });
       }
       break;
+    case "PUT":
+      try {
+        const todo = await collection.findOne({ _id: new ObjectId(id) });
+
+        collection.updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              completed: !todo.completed,
+            },
+          }
+        );
+
+        response.status(200).json("Todo updated");
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({ success: false, message: e.message });
+      }
+      break;
     case "DELETE":
       try {
         const todo = await collection.deleteOne({

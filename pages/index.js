@@ -16,12 +16,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import UndoIcon from "@mui/icons-material/Undo";
 import DoneIcon from "@mui/icons-material/Done";
 import useData from "../src/useData";
 import TodoForm from "../src/components/TodoForm";
 
 export default function Index() {
-  const { isLoading, returnData, getData, createData, deleteData } =
+  const { isLoading, returnData, getData, createData, updateData, deleteData } =
     useData("todos");
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -33,6 +34,10 @@ export default function Index() {
   const handleCreate = async (formData) => {
     await createData("todos", formData);
     handleDialogClose();
+  };
+
+  const handleUpdate = async (id) => {
+    await updateData("todos", id);
   };
 
   const handleDelete = async (id) => {
@@ -83,20 +88,46 @@ export default function Index() {
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell>{row._id}</TableCell>
-                      <TableCell>{row.title}</TableCell>
-                      <TableCell>{row.description}</TableCell>
+                      <TableCell
+                        sx={
+                          row.completed
+                            ? { textDecoration: "line-through" }
+                            : {}
+                        }
+                      >
+                        {row.title}
+                      </TableCell>
+                      <TableCell
+                        sx={
+                          row.completed
+                            ? { textDecoration: "line-through" }
+                            : {}
+                        }
+                      >
+                        {row.description}
+                      </TableCell>
                       <TableCell>{row.completed ? "True" : "False"}</TableCell>
                       <TableCell></TableCell>
                       <TableCell>
                         <Grid container spacing={3}>
                           <Grid item>
-                            <DoneIcon
-                              // onClick={() => handleDelete(row._id)}
-                              sx={{
-                                color: "lightgreen",
-                                ":hover": { color: "green" },
-                              }}
-                            />
+                            {row.completed ? (
+                              <UndoIcon
+                                onClick={() => handleUpdate(row._id)}
+                                sx={{
+                                  color: "lightblue",
+                                  ":hover": { color: "blue" },
+                                }}
+                              />
+                            ) : (
+                              <DoneIcon
+                                onClick={() => handleUpdate(row._id)}
+                                sx={{
+                                  color: "lightgreen",
+                                  ":hover": { color: "green" },
+                                }}
+                              />
+                            )}
                           </Grid>
                           <Grid item>
                             <DeleteOutlinedIcon
